@@ -1,0 +1,5 @@
+{
+  "name": "Simulação Gato de Schrödinger",
+  "description": "Uma simulação interativa que representa o experimento do Gato de Schrödinger, combinando física quântica e um jogo de memória estilo Simon Game.",
+  "requestFramePermissions": []
+}
