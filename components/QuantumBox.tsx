@@ -120,8 +120,8 @@ export const QuantumBox: React.FC<QuantumBoxProps> = ({ catState }) => {
         className={`absolute inset-0 transition-all duration-500 ease-in-out flex items-center justify-center 
           ${isRevealed ? 'opacity-0 scale-75 -rotate-45' : 'opacity-100 scale-100 rotate-0'}`}
       >
-        <div className="w-full h-full bg-yellow-800 border-4 border-yellow-900 flex items-center justify-center rounded-lg shadow-2xl">
-          <span className="text-8xl text-yellow-900 font-bold select-none">?</span>
+        <div className={`w-full h-full bg-slate-800 border-4 border-cyan-500/50 flex items-center justify-center rounded-lg shadow-2xl ${!isRevealed ? 'animate-pulse-glow' : ''}`}>
+          <span className="text-8xl text-cyan-400 font-bold select-none text-flicker">?</span>
         </div>
       </div>
 

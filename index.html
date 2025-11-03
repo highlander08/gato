@@ -6,6 +6,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Schrödinger's Cat Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @keyframes pulse-glow {
+        0%, 100% {
+          box-shadow: 0 0 20px 5px rgba(0, 255, 255, 0.2), 0 0 8px 2px rgba(0, 255, 255, 0.2) inset;
+          border-color: rgba(0, 255, 255, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 35px 10px rgba(0, 255, 255, 0.4), 0 0 12px 4px rgba(0, 255, 255, 0.4) inset;
+          border-color: rgba(0, 255, 255, 0.7);
+        }
+      }
+
+      @keyframes text-flicker {
+        0%, 100% { opacity: 1; text-shadow: 0 0 8px #0ea5e9, 0 0 2px #0ea5e9; }
+        50% { opacity: 0.8; text-shadow: 0 0 10px #0ea5e9, 0 0 3px #0ea5e9; }
+      }
+
+      @keyframes scanline-scroll {
+        0% {
+          transform: translateY(0%);
+        }
+        100% {
+          transform: translateY(-50%);
+        }
+      }
+
+      .bg-quantum-dark {
+        background-color: #020617; /* slate-950 */
+        background-image:
+          radial-gradient(circle at 1px 1px, rgba(203, 213, 225, 0.1) 1px, transparent 0),
+          radial-gradient(circle at 10px 10px, rgba(203, 213, 225, 0.1) 1px, transparent 0);
+        background-size: 20px 20px;
+      }
+      
+      .scanline-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 200%;
+        pointer-events: none;
+        background: linear-gradient(
+          to bottom,
+          rgba(15, 23, 42, 0) 0%, /* slate-900 */
+          rgba(15, 23, 42, 0.1) 50%,
+          rgba(15, 23, 42, 0) 100%
+        );
+        background-size: 100% 8px;
+        animation: scanline-scroll 20s linear infinite;
+        z-index: 100;
+      }
+      
+      .animate-pulse-glow {
+        animation: pulse-glow 3s ease-in-out infinite;
+      }
+      
+      .text-flicker {
+        animation: text-flicker 2s ease-in-out infinite;
+      }
+    </style>
   <script type="importmap">
 {
   "imports": {
@@ -18,6 +78,7 @@
 </head>
   <body>
     <div id="root"></div>
+    <div class="scanline-overlay"></div>
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>

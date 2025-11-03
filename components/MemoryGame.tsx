@@ -86,14 +86,16 @@ export const MemoryGame: React.FC<MemoryGameProps> = ({ onSuccess, onFailure }) 
 
   return (
     <div className="flex flex-col items-center animate-fade-in">
-      <p className="text-xl h-8 mb-6 text-cyan-300 tracking-wider">{message}</p>
-      <div className="grid grid-cols-2 gap-4 w-64 h-64 md:w-80 md:h-80">
+      <p className="text-xl h-12 mb-6 text-cyan-300 tracking-wider bg-black/30 w-full max-w-md flex items-center justify-center rounded-md border border-cyan-500/30">
+        {message}
+      </p>
+      <div className="grid grid-cols-2 gap-4 w-72 h-72 md:w-96 md:h-96">
         {COLORS.map((color) => (
           <button
             key={color}
             disabled={!isPlayerTurn}
             onClick={() => handlePlayerInput(color)}
-            className={`w-full h-full rounded-lg transition-all duration-200 
+            className={`w-full h-full rounded-2xl transition-all duration-200 
               ${isPlayerTurn ? 'cursor-pointer' : 'cursor-wait'}
               ${activeColor === color ? ACTIVE_COLOR_STYLES[color] : COLOR_STYLES[color]}
             `}
