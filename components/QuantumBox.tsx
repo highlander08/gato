@@ -88,10 +88,9 @@ export const QuantumBox: React.FC<QuantumBoxProps> = ({ appState, catState }) =>
       return '🔒';
     };
 
-    const inBoxTranslate = 'translate-y-16';
     const elementsContainerClass = isPreSimulation
-      ? '-translate-y-40 opacity-100' // Float higher above the box
-      : `${inBoxTranslate} scale-50 opacity-0`; // Animate into the box
+      ? '-translate-y-64 opacity-100' // Start high above the box (16rem up)
+      : 'translate-y-0 opacity-0';   // Animate down to the box's vertical center (0) and fade
     
     // 3D Box constants
     const BOX_SIZE_REM = 14; // Corresponds to w-56, h-56
@@ -107,14 +106,13 @@ export const QuantumBox: React.FC<QuantumBoxProps> = ({ appState, catState }) =>
       <div className="relative w-full h-96 flex items-center justify-center" style={{ perspective: '1000px' }}>
         
         {/* External items */}
-        <div style={{ transform: 'translateY(-16rem)' }} className={`absolute flex items-center justify-center gap-4 transition-all duration-1000 ease-in-out ${elementsContainerClass}`}>
+        <div className={`absolute flex items-center justify-center gap-4 transition-all duration-1000 ease-in-out ${elementsContainerClass}`}>
             <HammerImage className="w-16 h-16" />
             <AliveCatImage className="w-28 h-28" />
             <VialImage isBroken={false} className="w-16 h-16" />
         </div>
         
         {/* Box container */}
-        {/* Fix: Corrected typo in transformStyle from 'preserve-d' to 'preserve-3d'. */}
         <div className="relative w-56 h-56" style={{ transformStyle: 'preserve-3d', transform: 'rotateY(-30deg) rotateX(15deg)' }}>
             {/* Top (Lid) */}
             <div 
@@ -148,12 +146,12 @@ export const QuantumBox: React.FC<QuantumBoxProps> = ({ appState, catState }) =>
             
             {/* Front */}
             <div 
-              className={`${faceBaseClass} bg-slate-900/80 flex items-center justify-center shadow-2xl relative
+              className={`${faceBaseClass} bg-slate-900 flex items-center justify-center shadow-2xl relative
               ${isSuperposition ? 'animate-pulse-glow' : ''}
               ${(isRevealing && catState === CatState.DEAD) ? 'shadow-red-500/80' : ''}`}
               style={{ transform: `translateZ(${HALF_SIZE_REM}rem)` }}>
 
-              {isPreSimulation && (
+              {(isPreSimulation || isSuperposition) && (
                 <p className="text-2xl text-flicker text-white text-center">
                   <span className="text-red-500 animate-pulse">💓</span> Salve o gato!
                 </p>
@@ -170,7 +168,7 @@ export const QuantumBox: React.FC<QuantumBoxProps> = ({ appState, catState }) =>
                  </div>
               )}
 
-              <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl transition-all duration-700 ease-in-out z-10 
+              <div className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl transition-all duration-700 ease-in-out z-10 
                   ${isSuperposition ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}
                   ${isRevealing && catState === CatState.ALIVE ? '!opacity-100 !scale-100' : ''}
               `}>

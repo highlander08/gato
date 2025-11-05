@@ -7,9 +7,13 @@ const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>(AppState.PRE_SIMULATION);
   const [catState, setCatState] = useState<CatState>(CatState.SUPERPOSITION);
   const [gameKey, setGameKey] = useState<number>(0);
+  const [showMemoryGame, setShowMemoryGame] = useState(false);
 
   const handleStart = () => {
     setAppState(AppState.SUPERPOSITION);
+    setTimeout(() => {
+      setShowMemoryGame(true);
+    }, 1500); // Delay appearance to sync with animation
   };
   
   const handleSuccess = useCallback(() => {
@@ -25,6 +29,7 @@ const App: React.FC = () => {
   const handleReset = () => {
     setCatState(CatState.SUPERPOSITION);
     setAppState(AppState.PRE_SIMULATION);
+    setShowMemoryGame(false); // Reset visibility
     setGameKey(prevKey => prevKey + 1);
   };
   
@@ -107,7 +112,7 @@ const App: React.FC = () => {
               </div>
             )}
 
-            {appState === AppState.SUPERPOSITION && (
+            {appState === AppState.SUPERPOSITION && showMemoryGame && (
                <MemoryGame
                   key={gameKey}
                   onSuccess={handleSuccess}
