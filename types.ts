@@ -1,11 +1,12 @@
-import { COLORS } from './constants';
+// Fix: Moved COLORS constant here to resolve a circular dependency.
+export const COLORS = ['blue', 'red', 'green', 'yellow'] as const;
 
 export type Color = typeof COLORS[number];
 
 export enum AppState {
-  HOME,
-  PLAYING,
-  RESULT,
+  PRE_SIMULATION,
+  SUPERPOSITION,
+  REVEALING,
 }
 
 export enum CatState {

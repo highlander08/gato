@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Color } from '../types';
+// Fix: Import COLORS from types.ts where it is now located.
+import { Color, COLORS } from '../types';
 import {
-  COLORS,
+  COLOR_MAP,
+  KEY_MAP,
   COLOR_STYLES,
   ACTIVE_COLOR_STYLES,
   SEQUENCE_INTERVAL,
   HIGHLIGHT_DURATION,
-  MAX_LEVEL
 } from '../constants';
 
 interface MemoryGameProps {
@@ -15,93 +16,118 @@ interface MemoryGameProps {
 }
 
 export const MemoryGame: React.FC<MemoryGameProps> = ({ onSuccess, onFailure }) => {
-  const [level, setLevel] = useState(1);
-  const [sequence, setSequence] = useState<Color[]>([]);
-  const [playerSequence, setPlayerSequence] = useState<Color[]>([]);
+  const [sequence, setSequence] = useState<string[]>([]);
+  const [playerSequence, setPlayerSequence] = useState<string[]>([]);
   const [isPlayerTurn, setIsPlayerTurn] = useState(false);
   const [activeColor, setActiveColor] = useState<Color | null>(null);
-  const [message, setMessage] = useState('Observe a sequência...');
+  const [message, setMessage] = useState('Aguarde, preparando a superposição...');
 
-  const generateSequence = useCallback((currentLevel: number) => {
-    const newSequence: Color[] = [];
-    for (let i = 0; i < currentLevel; i++) {
-      const randomIndex = Math.floor(Math.random() * COLORS.length);
-      newSequence.push(COLORS[randomIndex]);
+  const generateSequence = useCallback(() => {
+    const sequenceLength = Math.floor(Math.random() * 4) + 1; // 1 to 4 colors
+    const newSequence: string[] = [];
+    for (let i = 0; i < sequenceLength; i++) {
+      const randomDigit = Math.floor(Math.random() * 4) + 1;
+      newSequence.push(randomDigit.toString());
     }
     setSequence(newSequence);
   }, []);
 
   useEffect(() => {
-    generateSequence(level);
-  }, [level, generateSequence]);
+    generateSequence();
+  }, [generateSequence]);
 
   const playSequence = useCallback(() => {
     setIsPlayerTurn(false);
-    setMessage('Observe a sequência...');
-    sequence.forEach((color, index) => {
+    setMessage('Observe a sequência de cores...');
+    sequence.forEach((digit, index) => {
       setTimeout(() => {
-        setActiveColor(color);
+        setActiveColor(COLOR_MAP[digit]);
         setTimeout(() => {
           setActiveColor(null);
           if (index === sequence.length - 1) {
             setIsPlayerTurn(true);
-            setMessage(`Sua vez! Nível ${level}`);
+            setMessage('Digite ou clique na sequência...');
             setPlayerSequence([]);
           }
         }, HIGHLIGHT_DURATION);
       }, (index + 1) * SEQUENCE_INTERVAL);
     });
-  }, [sequence, level]);
+  }, [sequence]);
 
   useEffect(() => {
     if (sequence.length > 0) {
-      const timeoutId = setTimeout(playSequence, 1000);
+      const timeoutId = setTimeout(playSequence, 1500); // Wait for box animation
       return () => clearTimeout(timeoutId);
     }
   }, [sequence, playSequence]);
 
-  const handlePlayerInput = (color: Color) => {
+  const processPlayerInput = useCallback((digit: string) => {
     if (!isPlayerTurn) return;
 
-    const newPlayerSequence = [...playerSequence, color];
+    const newPlayerSequence = [...playerSequence, digit];
     setPlayerSequence(newPlayerSequence);
-
-    if (newPlayerSequence[newPlayerSequence.length - 1] !== sequence[newPlayerSequence.length - 1]) {
-      onFailure();
-      return;
-    }
+    
+    // Instant feedback
+    setActiveColor(COLOR_MAP[digit]);
+    setTimeout(() => setActiveColor(null), 200);
 
     if (newPlayerSequence.length === sequence.length) {
-      if (level === MAX_LEVEL) {
-        onSuccess();
+      setIsPlayerTurn(false);
+      if (newPlayerSequence.join('') === sequence.join('')) {
+        setMessage('Sequência correta! Colapsando a função de onda...');
+        setTimeout(onSuccess, 1000);
       } else {
-        setIsPlayerTurn(false);
-        setMessage('Correto! Próximo nível...');
-        setTimeout(() => {
-          setLevel(prevLevel => prevLevel + 1);
-        }, 1500);
+        setMessage('Sequência incorreta! Um destino trágico foi selado...');
+        setTimeout(onFailure, 1000);
       }
     }
-  };
+  }, [isPlayerTurn, playerSequence, sequence, onSuccess, onFailure]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const digit = KEY_MAP[event.code];
+      if (digit) {
+        processPlayerInput(digit);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [processPlayerInput]);
+
+  const handleColorClick = (index: number) => {
+    const digit = (index + 1).toString();
+    processPlayerInput(digit);
+  };
+  
   return (
     <div className="flex flex-col items-center animate-fade-in">
-      <p className="text-xl h-12 mb-6 text-cyan-300 tracking-wider bg-black/30 w-full max-w-md flex items-center justify-center rounded-md border border-cyan-500/30">
+       <p className="text-xl h-12 mb-6 text-cyan-300 tracking-wider bg-black/30 w-full max-w-md flex items-center justify-center rounded-md border border-cyan-500/30">
         {message}
       </p>
-      <div className="grid grid-cols-2 gap-4 w-72 h-72 md:w-96 md:h-96">
-        {COLORS.map((color) => (
-          <button
-            key={color}
-            disabled={!isPlayerTurn}
-            onClick={() => handlePlayerInput(color)}
-            className={`w-full h-full rounded-2xl transition-all duration-200 
-              ${isPlayerTurn ? 'cursor-pointer' : 'cursor-wait'}
-              ${activeColor === color ? ACTIVE_COLOR_STYLES[color] : COLOR_STYLES[color]}
-            `}
-            aria-label={`Botão ${color}`}
-          />
+      <div className="grid grid-cols-4 gap-4 w-80 md:w-96">
+        {COLORS.map((color, index) => (
+           <div 
+              key={color} 
+              className={`flex flex-col items-center gap-2 p-1 rounded-lg transition-transform duration-200
+                ${isPlayerTurn ? 'cursor-pointer hover:scale-110' : 'cursor-not-allowed opacity-70'}
+              `}
+              onClick={() => handleColorClick(index)}
+              aria-label={`Cor ${color}, número ${index + 1}`}
+            >
+            <div
+              className={`w-16 h-16 md:w-20 md:h-20 rounded-2xl transition-all duration-200 
+                ${activeColor === color ? ACTIVE_COLOR_STYLES[color] : COLOR_STYLES[color]}
+              `}
+            />
+            <span className="font-bold text-lg text-gray-400">{index + 1}</span>
+          </div>
         ))}
+      </div>
+      <div className="mt-4 h-8 text-2xl tracking-[0.5em]">
+        {playerSequence.map((_, i) => '⚫').join('')}
       </div>
     </div>
   );
