@@ -159,7 +159,7 @@ export const MemoryGame: React.FC<MemoryGameProps> = ({ onSuccess, onDecay }) =>
         <p className="text-xl h-12 mb-4 text-cyan-300 tracking-wider bg-black/30 w-full flex items-center justify-center rounded-md border border-cyan-500/30 max-w-md">
           {message}
         </p>
-        <div className="grid grid-cols-4 gap-4 w-80 md:w-96">
+        <div className="grid grid-cols-2 gap-4 w-36 md:w-44">
           {COLORS.map((color, index) => (
              <div 
                 key={color} 
