@@ -7,6 +7,7 @@ export enum AppState {
   PRE_SIMULATION,
   SUPERPOSITION,
   REVEALING,
+  DECAYED,
 }
 
 export enum CatState {

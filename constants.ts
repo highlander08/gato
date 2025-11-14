@@ -32,3 +32,5 @@ export const ACTIVE_COLOR_STYLES: Record<Color, string> = {
 
 export const SEQUENCE_INTERVAL = 1000;
 export const HIGHLIGHT_DURATION = 600;
+
+export const TOTAL_TIME = 30000; // 30 seconds

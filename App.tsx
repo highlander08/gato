@@ -21,9 +21,9 @@ const App: React.FC = () => {
     setAppState(AppState.REVEALING);
   }, []);
 
-  const handleFailure = useCallback(() => {
+  const handleDecay = useCallback(() => {
     setCatState(CatState.DEAD);
-    setAppState(AppState.REVEALING);
+    setAppState(AppState.DECAYED);
   }, []);
 
   const handleReset = () => {
@@ -34,6 +34,8 @@ const App: React.FC = () => {
   };
   
   const resultData = useMemo(() => {
+    if (appState !== AppState.REVEALING) return null;
+
     switch (catState) {
       case CatState.ALIVE:
         return {
@@ -42,17 +44,11 @@ const App: React.FC = () => {
           text: "A função de onda colapsou em um estado feliz 🐾.",
           buttonText: "Simular Novamente",
         };
-      case CatState.DEAD:
-        return {
-          title: "Você falhou... O gato morreu.",
-          titleClass: "text-red-500",
-          text: "O colapso da função de onda revelou o pior destino.",
-          buttonText: "Tentar Salvar Outro Gato",
-        };
+      // No longer a 'DEAD' case here, it's handled by DECAYED state.
       default:
         return null;
     }
-  }, [catState]);
+  }, [catState, appState]);
 
   const getHeaderText = () => {
     switch(appState) {
@@ -62,6 +58,8 @@ const App: React.FC = () => {
         return "Observando a Superposição...";
       case AppState.REVEALING:
         return "A Função de Onda Colapsou!";
+      case AppState.DECAYED:
+        return "Decaimento Atômico Ocorreu!";
     }
   }
 
@@ -116,7 +114,7 @@ const App: React.FC = () => {
                <MemoryGame
                   key={gameKey}
                   onSuccess={handleSuccess}
-                  onFailure={handleFailure}
+                  onDecay={handleDecay}
                />
             )}
 
@@ -131,6 +129,21 @@ const App: React.FC = () => {
                      className="mt-8 px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-bold rounded-lg shadow-lg shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105"
                  >
                      {resultData.buttonText}
+                 </button>
+              </div>
+            )}
+            
+            {appState === AppState.DECAYED && (
+              <div className="animate-fade-in text-center min-h-[120px] mt-6">
+                 <h3 className="text-3xl font-bold text-red-500">
+                   O Átomo Decaiu!
+                 </h3>
+                 <p className="mt-2 text-gray-400">O tempo se esgotou. O destino do gato foi selado pelo decaimento.</p>
+                 <button
+                     onClick={handleReset}
+                     className="mt-8 px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-bold rounded-lg shadow-lg shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105"
+                 >
+                     Tentar Salvar Outro Gato
                  </button>
               </div>
             )}
